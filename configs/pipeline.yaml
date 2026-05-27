@@ -1,0 +1,23 @@
+# Pipeline 插件配置
+# 后续版本在此文件追加新的 detector/embedder/retriever 即可
+
+pipeline:
+  detectors: []  # M1 无需检测器; M2 追加 face_detector
+
+  embedders:
+    - name: clip_global
+      class_path: engine.embedders.clip_embedder.ClipEmbedder
+      model_name: ViT-B-32
+      pretrained: laion2b_s34b_b79k
+      device: cuda
+      source: full_image
+
+  retrievers:
+    - name: global_retriever
+      class_path: engine.retrievers.faiss_retriever.FaissRetriever
+      index_path: indexes/global.index
+      embedding_type: global
+      dimension: 512
+
+  ranker:
+    class_path: engine.rankers.simple_ranker.SimpleRanker

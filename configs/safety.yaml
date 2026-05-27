@@ -1,0 +1,13 @@
+# 安全配置
+min_final_score: 0.0          # M1 不设阈值，M3+ 启用
+save_audience_images: false
+save_audience_embeddings: false
+embedding_ttl_minutes: 60
+require_human_approval: false
+
+blocked_character_tags:
+  - political
+  - criminal
+  - disease
+  - body_shaming
+  - racial_stereotype

@@ -1,0 +1,5 @@
+presets:
+  default:
+    weights:
+      global: 1.0
+  # 后续版本追加 celebrity_face, anime_vibe, outfit_match 等 preset
