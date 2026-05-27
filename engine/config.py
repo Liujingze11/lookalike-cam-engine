@@ -1,8 +1,19 @@
-"""加载管线配置、preset 权重、安全规则。"""
+"""Pipeline configuration loader — YAML to typed dataclasses."""
+import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
+
+
+class ConfigLoadError(Exception):
+    """Raised when a configuration file cannot be loaded or parsed."""
+
+
+@dataclass
+class DetectorConfig:
+    class_path: str
+    kwargs: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -31,7 +42,7 @@ class RankerConfig:
 
 @dataclass
 class PipelineConfig:
-    detectors: list[dict] = field(default_factory=list)
+    detectors: list[DetectorConfig] = field(default_factory=list)
     embedders: list[EmbedderConfig] = field(default_factory=list)
     retrievers: list[RetrieverConfig] = field(default_factory=list)
     ranker: RankerConfig | None = None
@@ -54,19 +65,29 @@ class SafetyConfig:
 
 
 def load_pipeline_config(path: str | Path = "configs/pipeline.yaml") -> PipelineConfig:
-    with open(path) as f:
-        raw = yaml.safe_load(f)["pipeline"]
+    try:
+        with open(path) as f:
+            data = yaml.safe_load(f)
+    except FileNotFoundError as e:
+        raise ConfigLoadError(f"Pipeline config not found: {path}") from e
+    except yaml.YAMLError as e:
+        raise ConfigLoadError(f"Invalid YAML in pipeline config: {e}") from e
 
-    embedders = [
-        EmbedderConfig(**e) for e in raw.get("embedders", [])
-    ]
-    retrievers = [
-        RetrieverConfig(**r) for r in raw.get("retrievers", [])
-    ]
-    ranker = RankerConfig(**raw["ranker"]) if raw.get("ranker") else None
+    if data is None:
+        raise ConfigLoadError(f"Pipeline config is empty: {path}")
+
+    raw = data.get("pipeline", {})
+
+    try:
+        detectors = [DetectorConfig(**d) for d in raw.get("detectors", [])]
+        embedders = [EmbedderConfig(**e) for e in raw.get("embedders", [])]
+        retrievers = [RetrieverConfig(**r) for r in raw.get("retrievers", [])]
+        ranker = RankerConfig(**raw["ranker"]) if raw.get("ranker") else None
+    except (TypeError, KeyError) as e:
+        raise ConfigLoadError(f"Missing or invalid field in pipeline config: {e}") from e
 
     return PipelineConfig(
-        detectors=raw.get("detectors", []),
+        detectors=detectors,
         embedders=embedders,
         retrievers=retrievers,
         ranker=ranker,
@@ -74,15 +95,42 @@ def load_pipeline_config(path: str | Path = "configs/pipeline.yaml") -> Pipeline
 
 
 def load_presets(path: str | Path = "configs/presets.yaml") -> dict[str, Preset]:
-    with open(path) as f:
-        raw = yaml.safe_load(f)["presets"]
-    return {
-        name: Preset(name=name, weights=data["weights"])
-        for name, data in raw.items()
-    }
+    try:
+        with open(path) as f:
+            data = yaml.safe_load(f)
+    except FileNotFoundError as e:
+        raise ConfigLoadError(f"Presets config not found: {path}") from e
+    except yaml.YAMLError as e:
+        raise ConfigLoadError(f"Invalid YAML in presets config: {e}") from e
+
+    if data is None:
+        raise ConfigLoadError(f"Presets config is empty: {path}")
+
+    raw = data.get("presets", {})
+    result = {}
+    for name, item in raw.items():
+        try:
+            result[name] = Preset(name=name, weights=item["weights"])
+        except (KeyError, TypeError) as e:
+            raise ConfigLoadError(
+                f"Missing 'weights' in preset '{name}': {e}"
+            ) from e
+    return result
 
 
 def load_safety_config(path: str | Path = "configs/safety.yaml") -> SafetyConfig:
-    with open(path) as f:
-        raw = yaml.safe_load(f)
-    return SafetyConfig(**raw)
+    try:
+        with open(path) as f:
+            data = yaml.safe_load(f)
+    except FileNotFoundError as e:
+        raise ConfigLoadError(f"Safety config not found: {path}") from e
+    except yaml.YAMLError as e:
+        raise ConfigLoadError(f"Invalid YAML in safety config: {e}") from e
+
+    if data is None:
+        raise ConfigLoadError(f"Safety config is empty: {path}")
+
+    # Only pass known fields to SafetyConfig, ignoring extra keys
+    known_fields = {f.name for f in dataclasses.fields(SafetyConfig)}
+    filtered = {k: v for k, v in data.items() if k in known_fields}
+    return SafetyConfig(**filtered)
