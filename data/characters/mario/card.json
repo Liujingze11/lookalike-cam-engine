@@ -1,0 +1,18 @@
+{
+  "id": "mario",
+  "name": "Mario",
+  "type": "game_character",
+  "source": "Super Mario",
+  "tags": ["red_hat", "mustache", "blue_overalls", "cartoon"],
+  "slots": {
+    "face": ["mustache", "round_nose"],
+    "hat": ["red_cap"],
+    "upper_body": ["red_shirt"],
+    "lower_body": ["blue_overalls"],
+    "dominant_colors": ["red", "blue"]
+  },
+  "safety": {
+    "allowed": true,
+    "risk_level": "low"
+  }
+}

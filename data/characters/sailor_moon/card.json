@@ -1,0 +1,16 @@
+{
+  "id": "sailor_moon",
+  "name": "Sailor Moon",
+  "type": "anime_character",
+  "source": "Sailor Moon",
+  "tags": ["blonde_hair", "sailor_outfit", "anime", "magical_girl"],
+  "slots": {
+    "hair": ["blonde", "twin_tails"],
+    "upper_body": ["sailor_top"],
+    "dominant_colors": ["white", "pink", "blue", "yellow"]
+  },
+  "safety": {
+    "allowed": true,
+    "risk_level": "low"
+  }
+}

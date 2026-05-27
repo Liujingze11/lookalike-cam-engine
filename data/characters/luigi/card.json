@@ -1,0 +1,18 @@
+{
+  "id": "luigi",
+  "name": "Luigi",
+  "type": "game_character",
+  "source": "Super Mario",
+  "tags": ["green_hat", "mustache", "green_overalls", "cartoon"],
+  "slots": {
+    "face": ["mustache"],
+    "hat": ["green_cap"],
+    "upper_body": ["green_shirt"],
+    "lower_body": ["blue_overalls"],
+    "dominant_colors": ["green", "blue"]
+  },
+  "safety": {
+    "allowed": true,
+    "risk_level": "low"
+  }
+}

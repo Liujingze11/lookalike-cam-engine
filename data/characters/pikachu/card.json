@@ -1,0 +1,14 @@
+{
+  "id": "pikachu",
+  "name": "Pikachu",
+  "type": "anime_character",
+  "source": "Pokemon",
+  "tags": ["yellow", "electric", "cute", "anime"],
+  "slots": {
+    "dominant_colors": ["yellow", "red", "black"]
+  },
+  "safety": {
+    "allowed": true,
+    "risk_level": "low"
+  }
+}
