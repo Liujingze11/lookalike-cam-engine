@@ -25,9 +25,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Look-Alike Cam Engine",
+    title="撞脸镜头 - Look-Alike Cam 引擎",
     version="0.1.0",
-    description="多特征相似度匹配系统 - 娱乐向 Look-Alike Cam",
+    description="娱乐向多模态相似度匹配系统。上传观众照片，返回最相似的明星、动漫角色、游戏人物。",
     lifespan=lifespan,
 )
 
@@ -36,4 +36,4 @@ app.include_router(match_router)
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "ok", "message": "服务运行中"}
