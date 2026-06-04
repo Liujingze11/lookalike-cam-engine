@@ -5,3 +5,19 @@ __pycache__/
 dist/
 build/
 *.local/
+
+# 敏感配置
+.env
+.env.*
+credentials*
+*_keys.*
+
+# Superpowers
+.superpowers/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
